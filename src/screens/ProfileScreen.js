@@ -17,79 +17,103 @@ const { width } = Dimensions.get('window');
 
 export default function ProfileScreen() {
   const [profileImage, setProfileImage] = React.useState(null);
-  const [useLocalImage, setUseLocalImage] = React.useState(false);
 
-  // Tenta carregar a imagem local
+  // Tenta carregar a foto local ao iniciar
   React.useEffect(() => {
-    try {
-      const imagePaths = [
-        require('../../assets/profile-photo.jpg'),
-        require('../assets/profile-photo.jpg'),
-      ];
-      
-      for (const img of imagePaths) {
-        try {
-          setProfileImage(img);
-          setUseLocalImage(true);
-          console.log('Imagem local carregada');
-          break;
-        } catch (e) {
-          continue;
-        }
-      }
-    } catch (error) {
-      console.log('Usando placeholder');
-    }
+    loadLocalPhoto();
   }, []);
+
+  const loadLocalPhoto = () => {
+    try {
+      // Tenta carregar a foto do diretório assets
+      const localPhoto = require('../../assets/profile-photo.jpg');
+      setProfileImage(localPhoto);
+      console.log('✅ Foto local carregada com sucesso!');
+    } catch (error) {
+      console.log('📷 Foto local não encontrada, usando placeholder');
+      // Se não encontrar, mantém o placeholder
+    }
+  };
 
   const handleAddPhoto = () => {
     Alert.alert(
-      "📸 Adicionar Foto",
-      "Como você deseja adicionar sua foto de perfil?",
+      "📸 Gerenciar Foto",
+      "O que você deseja fazer?",
       [
         { 
-          text: "🎨 Foto Online", 
-          style: 'default',
+          text: "🔄 Recarregar Foto Local", 
+          onPress: () => {
+            try {
+              const localPhoto = require('../../assets/profile-photo.jpg');
+              setProfileImage(localPhoto);
+              Alert.alert("✅ Sucesso!", "Foto local recarregada!");
+            } catch (error) {
+              Alert.alert(
+                "❌ Foto não encontrada",
+                "Certifique-se de que a foto está em:\n\nassets/profile-photo.jpg",
+                [
+                  { 
+                    text: "📋 Ver Instruções", 
+                    onPress: showInstructions
+                  },
+                  { text: "OK", style: "cancel" }
+                ]
+              );
+            }
+          }
+        },
+        { 
+          text: "🌐 Usar Foto Demo", 
           onPress: () => {
             setProfileImage({ 
               uri: 'https://images.unsplash.com/photo-1544005313-94ddf0286df2?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=80' 
             });
-            setUseLocalImage(false);
           }
         },
         { 
-          text: "💾 Foto Local", 
-          style: 'default',
-          onPress: () => {
-            Alert.alert(
-              "📁 Instruções",
-              "1. Crie a pasta 'assets' na raiz do projeto\n2. Adicione sua foto como 'profile-photo.jpg'\n3. Reinicie o aplicativo",
-              [
-                { 
-                  text: "✅ Carregar", 
-                  onPress: () => {
-                    try {
-                      const img = require('../../assets/profile-photo.jpg');
-                      setProfileImage(img);
-                      setUseLocalImage(true);
-                    } catch (error) {
-                      Alert.alert("❌ Erro", "Foto não encontrada!");
-                    }
-                  }
-                },
-                { text: "Cancelar", style: "cancel" }
-              ]
-            );
-          }
-        },
-        { 
-          text: "🎭 Avatar", 
+          text: "❌ Remover Foto", 
           style: 'destructive',
-          onPress: () => {
-            setProfileImage(null);
-            setUseLocalImage(false);
-          }
+          onPress: () => setProfileImage(null)
+        },
+        { 
+          text: "✖️ Cancelar", 
+          style: 'cancel' 
         }
+      ]
+    );
+  };
+
+  const showInstructions = () => {
+    Alert.alert(
+      "📁 Instruções para Foto Local",
+      "Para usar sua foto pessoal:\n\n" +
+      "1. Na pasta RAIZ do seu projeto, crie uma pasta chamada 'assets'\n" +
+      "2. Coloque sua foto dentro desta pasta\n" +
+      "3. Renomeie a foto para 'profile-photo.jpg'\n\n" +
+      "📂 Estrutura correta:\n" +
+      "SeuProjeto/\n" +
+      "├── assets/\n" +
+      "│   └── profile-photo.jpg\n" +
+      "├── src/\n" +
+      "└── App.js\n\n" +
+      "🔧 Dicas:\n" +
+      "• Use imagem quadrada (ex: 500x500px)\n" +
+      "• Formatos: JPG, PNG\n" +
+      "• Reinicie o app após adicionar a foto",
+      [
+        { 
+          text: "🔄 Tentar Novamente", 
+          onPress: () => {
+            try {
+              const localPhoto = require('../../assets/profile-photo.jpg');
+              setProfileImage(localPhoto);
+              Alert.alert("🎉 Sucesso!", "Foto local carregada!");
+            } catch (error) {
+              Alert.alert("❌ Ainda não encontrada", "Verifique o caminho da foto.");
+            }
+          }
+        },
+        { text: "OK", style: "cancel" }
       ]
     );
   };
@@ -99,293 +123,162 @@ export default function ProfileScreen() {
       <ScrollView 
         style={styles.container} 
         showsVerticalScrollIndicator={false}
-        contentContainerStyle={styles.scrollContent}
       >
         
-        {/* Header com Gradiente */}
+        {/* Header */}
         <LinearGradient
           colors={['#e10600', '#b90500', '#8a0300']}
           style={styles.header}
-          start={{ x: 0, y: 0 }}
-          end={{ x: 1, y: 1 }}
         >
           <View style={styles.headerContent}>
             <Text style={styles.title}>Perfil do Desenvolvedor</Text>
-            <Text style={styles.subHeader}>F1 Mobile App</Text>
-          </View>
-          <View style={styles.headerPattern}>
-            <Icon name="speed" size={30} color="rgba(255,255,255,0.1)" />
-            <Icon name="dashboard" size={30} color="rgba(255,255,255,0.1)" />
-            <Icon name="track-changes" size={30} color="rgba(255,255,255,0.1)" />
+            <Text style={styles.subHeader}>F1 Mobile App - 2025</Text>
           </View>
         </LinearGradient>
 
-        {/* Card Principal */}
-        <View style={styles.profileCardWrapper}>
-          <LinearGradient
-            colors={['#ffffff', '#f8f9fa']}
-            style={styles.profileCard}
-            start={{ x: 0, y: 0 }}
-            end={{ x: 1, y: 1 }}
-          >
-            
-            {/* Seção da Foto com Efeito 3D */}
-            <View style={styles.avatarSection}>
-              <View style={styles.photoContainer}>
-                <TouchableOpacity 
-                  style={styles.photoFrame}
-                  onPress={handleAddPhoto}
-                  activeOpacity={0.8}
-                >
-                  {profileImage ? (
-                    <Image 
-                      source={profileImage} 
-                      style={styles.profileImage}
-                    />
-                  ) : (
-                    <LinearGradient
-                      colors={['#f0f0f0', '#e0e0e0']}
-                      style={styles.photoPlaceholder}
-                      start={{ x: 0, y: 0 }}
-                      end={{ x: 1, y: 1 }}
-                    >
-                      <View style={styles.placeholderIcon}>
-                        <Icon name="person" size={50} color="#e10600" />
-                      </View>
-                      <Text style={styles.addPhotoText}>Adicionar Foto</Text>
-                    </LinearGradient>
-                  )}
-                  
-                  {/* Badge Flutuante */}
-                  <View style={styles.floatingBadge}>
-                    <LinearGradient
-                      colors={['#e10600', '#b90500']}
-                      style={styles.badgeGradient}
-                    >
-                      <Icon name="code" size={14} color="white" />
-                    </LinearGradient>
-                  </View>
-                </TouchableOpacity>
-                
-                {/* Ícone da Câmera */}
-                <TouchableOpacity 
-                  style={styles.cameraIconWrapper}
-                  onPress={handleAddPhoto}
-                >
-                  <LinearGradient
-                    colors={['#e10600', '#b90500']}
-                    style={styles.cameraIcon}
-                  >
-                    <Icon name="photo-camera" size={18} color="white" />
-                  </LinearGradient>
-                </TouchableOpacity>
-              </View>
-              
-              {/* Info do Perfil */}
-              <View style={styles.profileInfo}>
-                <Text style={styles.name}>Melânia Santos</Text>
-                <View style={styles.badgeRow}>
-                  <View style={[styles.statusBadge, styles.studentBadge]}>
-                    <Text style={styles.badgeText}>👩‍💻 2º Ano Info</Text>
-                  </View>
-                  <View style={[styles.statusBadge, styles.projectBadge]}>
-                    <Text style={styles.badgeText}>🚀 4º Bimestre</Text>
-                  </View>
-                </View>
-                <Text style={styles.role}>Desenvolvedora Mobile React Native</Text>
-                <View style={styles.statsContainer}>
-                  <View style={styles.statItem}>
-                    <Icon name="star" size={20} color="#FFD700" />
-                    <Text style={styles.statText}>Projeto F1</Text>
-                  </View>
-                  <View style={styles.statDivider} />
-                  <View style={styles.statItem}>
-                    <Icon name="verified" size={20} color="#4CAF50" />
-                    <Text style={styles.statText}>React Native</Text>
-                  </View>
-                  <View style={styles.statDivider} />
-                  <View style={styles.statItem}>
-                    <Icon name="trending-up" size={20} color="#2196F3" />
-                    <Text style={styles.statText}>Em Evolução</Text>
-                  </View>
-                </View>
-              </View>
-            </View>
-
-            {/* Divisor Estilizado */}
-            <View style={styles.divider}>
-              <View style={styles.dividerLine} />
-              <Icon name="more-horiz" size={24} color="#e10600" />
-              <View style={styles.dividerLine} />
-            </View>
-
-            {/* Sobre Mim */}
-            <View style={styles.section}>
-              <View style={styles.sectionHeader}>
-                <LinearGradient
-                  colors={['#e10600', '#b90500']}
-                  style={styles.sectionIcon}
-                >
-                  <Icon name="person" size={20} color="white" />
-                </LinearGradient>
-                <View>
-                  <Text style={styles.sectionTitle}>Sobre Mim</Text>
-                  <Text style={styles.sectionSubtitle}>Conheça a desenvolvedora</Text>
-                </View>
-              </View>
-              <Text style={styles.sectionText}>
-                Apaixonada por tecnologia desde cedo, encontrei no desenvolvimento mobile 
-                a combinação perfeita entre criatividade e lógica. Atualmente focada em 
-                React Native, busco criar experiências digitais que sejam tanto funcionais 
-                quanto visualmente impactantes.
-              </Text>
-            </View>
-
-            {/* Sobre o Projeto */}
-            <View style={styles.section}>
-              <View style={styles.sectionHeader}>
-                <LinearGradient
-                  colors={['#e10600', '#b90500']}
-                  style={styles.sectionIcon}
-                >
-                  <Icon name="flag" size={20} color="white" />
-                </LinearGradient>
-                <View>
-                  <Text style={styles.sectionTitle}>O Projeto F1</Text>
-                  <Text style={styles.sectionSubtitle}>Desafio do 4º Bimestre</Text>
-                </View>
-              </View>
-              <Text style={styles.sectionText}>
-                Desenvolvi este aplicativo de Fórmula 1 para demonstrar minhas habilidades 
-                em React Native. O objetivo foi criar uma experiência completa para fãs, 
-                com dados atualizados, interface intuitiva e performance otimizada.
-              </Text>
-            </View>
-
-            {/* Hobbies */}
-            <View style={styles.section}>
-              <View style={styles.sectionHeader}>
-                <LinearGradient
-                  colors={['#e10600', '#b90500']}
-                  style={styles.sectionIcon}
-                >
-                  <Icon name="sports-esports" size={20} color="white" />
-                </LinearGradient>
-                <View>
-                  <Text style={styles.sectionTitle}>Meus Hobbies</Text>
-                  <Text style={styles.sectionSubtitle}>O que faço além do código</Text>
-                </View>
-              </View>
-              <View style={styles.hobbiesGrid}>
-                {[
-                  { icon: '🏎️', label: 'F1', color: '#FF5252' },
-                  { icon: '💻', label: 'Coding', color: '#2196F3' },
-                  { icon: '🎮', label: 'Games', color: '#9C27B0' },
-                  { icon: '🎵', label: 'Música', color: '#4CAF50' },
-                  { icon: '📚', label: 'Leitura', color: '#FF9800' },
-                  { icon: '✈️', label: 'Viagens', color: '#00BCD4' },
-                ].map((hobby, index) => (
-                  <TouchableOpacity key={index} style={styles.hobbyCard}>
-                    <View style={[styles.hobbyIconContainer, { backgroundColor: hobby.color + '20' }]}>
-                      <Text style={styles.hobbyIcon}>{hobby.icon}</Text>
-                    </View>
-                    <Text style={styles.hobbyLabel}>{hobby.label}</Text>
-                  </TouchableOpacity>
-                ))}
-              </View>
-            </View>
-
-            {/* Tecnologias */}
-            <View style={styles.section}>
-              <View style={styles.sectionHeader}>
-                <LinearGradient
-                  colors={['#e10600', '#b90500']}
-                  style={styles.sectionIcon}
-                >
-                  <Icon name="memory" size={20} color="white" />
-                </LinearGradient>
-                <View>
-                  <Text style={styles.sectionTitle}>Stack Tecnológico</Text>
-                  <Text style={styles.sectionSubtitle}>Ferramentas e tecnologias</Text>
-                </View>
-              </View>
-              <View style={styles.techStack}>
-                {[
-                  { name: 'React Native', icon: '⚛️', level: 'Avançado' },
-                  { name: 'JavaScript', icon: '📱', level: 'Avançado' },
-                  { name: 'Expo', icon: '🚀', level: 'Intermediário' },
-                  { name: 'React Navigation', icon: '🧭', level: 'Intermediário' },
-                  { name: 'Git', icon: '📊', level: 'Intermediário' },
-                  { name: 'Figma', icon: '🎨', level: 'Básico' },
-                ].map((tech, index) => (
-                  <View key={index} style={styles.techItem}>
-                    <View style={styles.techIconWrapper}>
-                      <Text style={styles.techIcon}>{tech.icon}</Text>
-                    </View>
-                    <View style={styles.techInfo}>
-                      <Text style={styles.techName}>{tech.name}</Text>
-                      <View style={styles.levelContainer}>
-                        <View style={[styles.levelBar, { width: tech.level === 'Avançado' ? '90%' : tech.level === 'Intermediário' ? '70%' : '50%' }]} />
-                      </View>
-                      <Text style={styles.techLevel}>{tech.level}</Text>
-                    </View>
-                  </View>
-                ))}
-              </View>
-            </View>
-
-            {/* Footer com Status da Foto */}
-            <LinearGradient
-              colors={['#f8f9fa', '#e9ecef']}
-              style={styles.footerCard}
+        {/* Card do Perfil */}
+        <View style={styles.profileCard}>
+          
+          {/* Foto do Perfil */}
+          <View style={styles.photoSection}>
+            <TouchableOpacity 
+              style={styles.photoContainer}
+              onPress={handleAddPhoto}
+              activeOpacity={0.8}
             >
-              <View style={styles.footerHeader}>
-                <Icon 
-                  name={profileImage ? "check-circle" : "info"} 
-                  size={24} 
-                  color={profileImage ? "#4CAF50" : "#2196F3"} 
+              {profileImage ? (
+                <Image 
+                  source={profileImage} 
+                  style={styles.profileImage}
                 />
-                <Text style={styles.footerTitle}>
-                  {profileImage ? 'Foto Configurada ✓' : 'Configuração de Foto'}
-                </Text>
-              </View>
+              ) : (
+                <View style={styles.photoPlaceholder}>
+                  <Icon name="person" size={60} color="#e10600" />
+                  <Text style={styles.placeholderText}>Adicionar Foto</Text>
+                </View>
+              )}
               
-              <Text style={styles.footerText}>
-                {profileImage 
-                  ? useLocalImage 
-                    ? 'Sua foto pessoal está sendo exibida.'
-                    : 'Usando foto de demonstração da internet.'
-                  : 'Adicione uma foto personalizada para seu perfil.'
+              {/* Ícone da Câmera (Botão Flutuante) */}
+              <TouchableOpacity 
+                style={styles.cameraButton}
+                onPress={handleAddPhoto}
+              >
+                <LinearGradient
+                  colors={['#e10600', '#b90500']}
+                  style={styles.cameraIcon}
+                >
+                  <Icon name="photo-camera" size={20} color="white" />
+                </LinearGradient>
+              </TouchableOpacity>
+            </TouchableOpacity>
+            
+            {/* Indicador de Foto Local */}
+            {profileImage && profileImage.uri === undefined && (
+              <View style={styles.localBadge}>
+                <Icon name="folder" size={12} color="white" />
+                <Text style={styles.localBadgeText}> Local</Text>
+              </View>
+            )}
+          </View>
+
+          {/* Informações Pessoais */}
+          <View style={styles.infoSection}>
+            <Text style={styles.name}>Melânia Santos</Text>
+            <Text style={styles.role}>Desenvolvedora Mobile React Native</Text>
+            
+            <View style={styles.badges}>
+              <View style={styles.badge}>
+                <Text style={styles.badgeText}>2º Ano Informática</Text>
+              </View>
+              <View style={styles.badge}>
+                <Text style={styles.badgeText}>4º Bimestre</Text>
+              </View>
+            </View>
+          </View>
+
+          {/* Divisor */}
+          <View style={styles.divider} />
+
+          {/* Sobre Mim */}
+          <View style={styles.section}>
+            <View style={styles.sectionHeader}>
+              <Icon name="person" size={24} color="#e10600" />
+              <Text style={styles.sectionTitle}>Sobre Mim</Text>
+            </View>
+            <Text style={styles.sectionText}>
+              Estudante de Informática apaixonada por desenvolvimento mobile. 
+              Este aplicativo de Fórmula 1 foi desenvolvido como projeto do 4º bimestre 
+              utilizando React Native e Expo.
+            </Text>
+          </View>
+
+          {/* Tecnologias */}
+          <View style={styles.section}>
+            <View style={styles.sectionHeader}>
+              <Icon name="code" size={24} color="#e10600" />
+              <Text style={styles.sectionTitle}>Tecnologias Utilizadas</Text>
+            </View>
+            <View style={styles.techList}>
+              <Text style={styles.techItem}>• React Native</Text>
+              <Text style={styles.techItem}>• Expo</Text>
+              <Text style={styles.techItem}>• React Navigation</Text>
+              <Text style={styles.techItem}>• JavaScript ES6+</Text>
+            </View>
+          </View>
+
+          {/* Botões de Ação */}
+          <View style={styles.actionButtons}>
+            <TouchableOpacity 
+              style={[styles.actionButton, styles.primaryButton]}
+              onPress={() => {
+                try {
+                  const localPhoto = require('../../assets/profile-photo.jpg');
+                  setProfileImage(localPhoto);
+                  Alert.alert("✅", "Foto local carregada!");
+                } catch (error) {
+                  showInstructions();
                 }
-              </Text>
-              
-              <View style={styles.footerButtons}>
-                <TouchableOpacity 
-                  style={[styles.footerButton, styles.primaryButton]}
-                  onPress={() => {
-                    setProfileImage({ 
-                      uri: 'https://images.unsplash.com/photo-1544005313-94ddf0286df2?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=80' 
-                    });
-                    setUseLocalImage(false);
-                  }}
-                >
-                  <Icon name="image" size={16} color="white" />
-                  <Text style={styles.primaryButtonText}> Foto Demo</Text>
-                </TouchableOpacity>
-                
-                <TouchableOpacity 
-                  style={[styles.footerButton, styles.secondaryButton]}
-                  onPress={() => {
-                    setProfileImage(null);
-                    setUseLocalImage(false);
-                  }}
-                >
-                  <Icon name="refresh" size={16} color="#666" />
-                  <Text style={styles.secondaryButtonText}> Resetar</Text>
-                </TouchableOpacity>
-              </View>
-            </LinearGradient>
-          </LinearGradient>
+              }}
+            >
+              <Icon name="folder-open" size={18} color="white" />
+              <Text style={styles.primaryButtonText}> Carregar Foto Local</Text>
+            </TouchableOpacity>
+            
+            <TouchableOpacity 
+              style={[styles.actionButton, styles.secondaryButton]}
+              onPress={handleAddPhoto}
+            >
+              <Icon name="settings" size={18} color="#666" />
+              <Text style={styles.secondaryButtonText}> Mais Opções</Text>
+            </TouchableOpacity>
+          </View>
+
+          {/* Status da Foto */}
+          <View style={styles.statusCard}>
+            <Icon 
+              name={profileImage ? "check-circle" : "info"} 
+              size={24} 
+              color={profileImage ? "#4CAF50" : "#2196F3"} 
+            />
+            <Text style={styles.statusText}>
+              {profileImage 
+                ? profileImage.uri === undefined 
+                  ? '✅ Usando sua foto local do diretório assets/'
+                  : '🌐 Usando foto de demonstração da internet'
+                : '📷 Toque no botão para adicionar uma foto'
+              }
+            </Text>
+          </View>
+
+          {/* Instruções Rápidas */}
+          <TouchableOpacity 
+            style={styles.helpButton}
+            onPress={showInstructions}
+          >
+            <Icon name="help-outline" size={16} color="#666" />
+            <Text style={styles.helpText}> Como adicionar minha foto?</Text>
+          </TouchableOpacity>
+
         </View>
       </ScrollView>
     </SafeAreaView>
@@ -400,39 +293,23 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
   },
-  scrollContent: {
-    paddingBottom: 30,
-  },
   header: {
-    height: 180,
-    borderBottomLeftRadius: 30,
-    borderBottomRightRadius: 30,
+    height: 150,
+    borderBottomLeftRadius: 25,
+    borderBottomRightRadius: 25,
     paddingHorizontal: 20,
     paddingTop: 40,
-    position: 'relative',
-    overflow: 'hidden',
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   headerContent: {
     alignItems: 'center',
-    zIndex: 2,
-  },
-  headerPattern: {
-    position: 'absolute',
-    flexDirection: 'row',
-    justifyContent: 'space-around',
-    width: '100%',
-    bottom: 20,
-    opacity: 0.3,
   },
   title: {
-    fontSize: 28,
+    fontSize: 24,
     fontWeight: '800',
     color: 'white',
     textAlign: 'center',
-    letterSpacing: 0.5,
-    textShadowColor: 'rgba(0, 0, 0, 0.2)',
-    textShadowOffset: { width: 1, height: 1 },
-    textShadowRadius: 3,
   },
   subHeader: {
     fontSize: 14,
@@ -440,88 +317,60 @@ const styles = StyleSheet.create({
     marginTop: 5,
     fontWeight: '500',
   },
-  profileCardWrapper: {
-    paddingHorizontal: 20,
+  profileCard: {
+    backgroundColor: 'white',
+    marginHorizontal: 20,
     marginTop: -50,
+    borderRadius: 25,
+    padding: 25,
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 10 },
     shadowOpacity: 0.1,
     shadowRadius: 20,
     elevation: 10,
+    marginBottom: 30,
   },
-  profileCard: {
-    borderRadius: 25,
-    padding: 25,
-    marginBottom: 20,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 5 },
-    shadowOpacity: 0.05,
-    shadowRadius: 15,
-    elevation: 5,
-  },
-  avatarSection: {
+  photoSection: {
     alignItems: 'center',
-    marginBottom: 25,
+    marginBottom: 20,
   },
   photoContainer: {
     position: 'relative',
-    marginBottom: 20,
   },
-  photoFrame: {
+  profileImage: {
     width: 140,
     height: 140,
     borderRadius: 70,
-    backgroundColor: 'white',
+    borderWidth: 4,
+    borderColor: 'white',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 5 },
+    shadowOpacity: 0.2,
+    shadowRadius: 10,
+    elevation: 5,
+  },
+  photoPlaceholder: {
+    width: 140,
+    height: 140,
+    borderRadius: 70,
+    backgroundColor: '#f0f0f0',
     justifyContent: 'center',
     alignItems: 'center',
     borderWidth: 4,
     borderColor: 'white',
     shadowColor: '#000',
-    shadowOffset: { width: 0, height: 10 },
-    shadowOpacity: 0.15,
-    shadowRadius: 20,
-    elevation: 8,
-    overflow: 'hidden',
+    shadowOffset: { width: 0, height: 5 },
+    shadowOpacity: 0.1,
+    shadowRadius: 10,
+    elevation: 5,
   },
-  profileImage: {
-    width: '100%',
-    height: '100%',
-    borderRadius: 70,
-  },
-  photoPlaceholder: {
-    width: '100%',
-    height: '100%',
-    justifyContent: 'center',
-    alignItems: 'center',
-    borderRadius: 70,
-  },
-  placeholderIcon: {
-    marginBottom: 10,
-  },
-  addPhotoText: {
+  placeholderText: {
     fontSize: 12,
     color: '#666',
-    fontWeight: '600',
-    letterSpacing: 0.5,
+    marginTop: 8,
+    fontWeight: '500',
   },
-  floatingBadge: {
-    position: 'absolute',
-    top: 10,
-    right: 10,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.2,
-    shadowRadius: 3,
-    elevation: 4,
-  },
-  badgeGradient: {
-    width: 30,
-    height: 30,
-    borderRadius: 15,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  cameraIconWrapper: {
+  cameraButton: {
     position: 'absolute',
     bottom: 0,
     right: 0,
@@ -536,117 +385,84 @@ const styles = StyleSheet.create({
     borderColor: 'white',
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 3 },
-    shadowOpacity: 0.2,
+    shadowOpacity: 0.3,
     shadowRadius: 5,
     elevation: 5,
   },
-  profileInfo: {
-    alignItems: 'center',
-    marginTop: 10,
-  },
-  name: {
-    fontSize: 26,
-    fontWeight: '800',
-    color: '#1a1a1a',
-    textAlign: 'center',
-    marginBottom: 10,
-  },
-  badgeRow: {
+  localBadge: {
+    position: 'absolute',
+    top: 10,
+    right: 10,
+    backgroundColor: '#4CAF50',
     flexDirection: 'row',
-    marginBottom: 15,
-    gap: 10,
-  },
-  statusBadge: {
-    paddingHorizontal: 15,
-    paddingVertical: 6,
-    borderRadius: 20,
+    alignItems: 'center',
+    paddingHorizontal: 8,
+    paddingVertical: 4,
+    borderRadius: 12,
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
+    shadowOpacity: 0.2,
     shadowRadius: 3,
     elevation: 3,
   },
-  studentBadge: {
-    backgroundColor: '#e3f2fd',
+  localBadgeText: {
+    color: 'white',
+    fontSize: 10,
+    fontWeight: '600',
+    marginLeft: 2,
   },
-  projectBadge: {
-    backgroundColor: '#f3e5f5',
+  infoSection: {
+    alignItems: 'center',
+    marginBottom: 20,
   },
-  badgeText: {
-    fontSize: 12,
-    fontWeight: '700',
-    color: '#333',
+  name: {
+    fontSize: 22,
+    fontWeight: '800',
+    color: '#1a1a1a',
+    textAlign: 'center',
+    marginBottom: 5,
   },
   role: {
     fontSize: 14,
     color: '#666',
     textAlign: 'center',
-    marginBottom: 20,
+    marginBottom: 15,
     fontWeight: '500',
   },
-  statsContainer: {
+  badges: {
     flexDirection: 'row',
-    backgroundColor: '#f8f9fa',
-    padding: 12,
-    borderRadius: 15,
-    width: '100%',
-    justifyContent: 'space-around',
+    gap: 10,
+    marginTop: 5,
   },
-  statItem: {
-    alignItems: 'center',
-    flex: 1,
+  badge: {
+    backgroundColor: '#e3f2fd',
+    paddingHorizontal: 15,
+    paddingVertical: 6,
+    borderRadius: 20,
   },
-  statText: {
-    fontSize: 10,
-    color: '#666',
-    marginTop: 4,
+  badgeText: {
+    fontSize: 12,
     fontWeight: '600',
-  },
-  statDivider: {
-    width: 1,
-    backgroundColor: '#dee2e6',
-    height: '100%',
+    color: '#2196F3',
   },
   divider: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginVertical: 25,
-  },
-  dividerLine: {
-    flex: 1,
     height: 1,
     backgroundColor: '#e9ecef',
+    marginVertical: 25,
   },
   section: {
-    marginBottom: 30,
+    marginBottom: 25,
   },
   sectionHeader: {
     flexDirection: 'row',
     alignItems: 'center',
     marginBottom: 15,
   },
-  sectionIcon: {
-    width: 40,
-    height: 40,
-    borderRadius: 20,
-    justifyContent: 'center',
-    alignItems: 'center',
-    marginRight: 12,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 3,
-    elevation: 3,
-  },
   sectionTitle: {
     fontSize: 18,
     fontWeight: '700',
     color: '#1a1a1a',
-  },
-  sectionSubtitle: {
-    fontSize: 12,
-    color: '#666',
-    marginTop: 2,
+    marginLeft: 10,
   },
   sectionText: {
     fontSize: 14,
@@ -654,150 +470,78 @@ const styles = StyleSheet.create({
     color: '#555',
     textAlign: 'justify',
   },
-  hobbiesGrid: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    justifyContent: 'space-between',
-    marginTop: 10,
-  },
-  hobbyCard: {
-    width: '31%',
-    alignItems: 'center',
-    marginBottom: 15,
-    padding: 12,
-    backgroundColor: 'white',
-    borderRadius: 15,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.05,
-    shadowRadius: 5,
-    elevation: 3,
-  },
-  hobbyIconContainer: {
-    width: 50,
-    height: 50,
-    borderRadius: 25,
-    justifyContent: 'center',
-    alignItems: 'center',
-    marginBottom: 8,
-  },
-  hobbyIcon: {
-    fontSize: 24,
-  },
-  hobbyLabel: {
-    fontSize: 11,
-    fontWeight: '600',
-    color: '#333',
-    textAlign: 'center',
-  },
-  techStack: {
-    marginTop: 10,
-  },
-  techItem: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    backgroundColor: 'white',
-    padding: 15,
-    borderRadius: 12,
-    marginBottom: 10,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.05,
-    shadowRadius: 3,
-    elevation: 2,
-  },
-  techIconWrapper: {
-    marginRight: 15,
-  },
-  techIcon: {
-    fontSize: 28,
-  },
-  techInfo: {
-    flex: 1,
-  },
-  techName: {
-    fontSize: 14,
-    fontWeight: '600',
-    color: '#333',
-    marginBottom: 5,
-  },
-  levelContainer: {
-    height: 4,
-    backgroundColor: '#e9ecef',
-    borderRadius: 2,
-    marginBottom: 4,
-    overflow: 'hidden',
-  },
-  levelBar: {
-    height: '100%',
-    backgroundColor: '#e10600',
-    borderRadius: 2,
-  },
-  techLevel: {
-    fontSize: 10,
-    color: '#666',
-    fontWeight: '500',
-  },
-  footerCard: {
-    borderRadius: 20,
-    padding: 20,
-    marginTop: 10,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.05,
-    shadowRadius: 10,
-    elevation: 3,
-  },
-  footerHeader: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginBottom: 10,
-  },
-  footerTitle: {
-    fontSize: 16,
-    fontWeight: '700',
-    color: '#333',
+  techList: {
     marginLeft: 10,
   },
-  footerText: {
-    fontSize: 13,
-    color: '#666',
-    lineHeight: 18,
-    marginBottom: 15,
+  techItem: {
+    fontSize: 14,
+    color: '#555',
+    marginBottom: 8,
+    lineHeight: 20,
   },
-  footerButtons: {
-    flexDirection: 'row',
+  actionButtons: {
+    marginTop: 10,
+    marginBottom: 20,
     gap: 10,
   },
-  footerButton: {
-    flex: 1,
+  actionButton: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    paddingVertical: 12,
+    paddingVertical: 15,
     borderRadius: 12,
     shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 3,
-    elevation: 3,
+    shadowOffset: { width: 0, height: 3 },
+    shadowOpacity: 0.2,
+    shadowRadius: 5,
+    elevation: 5,
   },
   primaryButton: {
     backgroundColor: '#e10600',
   },
   primaryButtonText: {
     color: 'white',
+    fontSize: 16,
     fontWeight: '600',
-    fontSize: 13,
+    marginLeft: 10,
   },
   secondaryButton: {
     backgroundColor: 'white',
     borderWidth: 1,
-    borderColor: '#dee2e6',
+    borderColor: '#e9ecef',
   },
   secondaryButtonText: {
     color: '#666',
+    fontSize: 14,
     fontWeight: '600',
+    marginLeft: 10,
+  },
+  statusCard: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: '#f8f9fa',
+    padding: 15,
+    borderRadius: 12,
+    borderWidth: 1,
+    borderColor: '#e9ecef',
+    marginBottom: 15,
+  },
+  statusText: {
+    fontSize: 14,
+    color: '#666',
+    marginLeft: 10,
+    flex: 1,
+  },
+  helpButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingVertical: 10,
+  },
+  helpText: {
+    color: '#666',
     fontSize: 13,
+    marginLeft: 5,
+    textDecorationLine: 'underline',
   },
 });

@@ -58,7 +58,8 @@ export default function LoginScreen({ navigation }) {
       if (user) {
         setCurrentUser(user);
         Alert.alert('Sucesso!', `Bem-vindo de volta, ${user.name}!`);
-        navigation.navigate('Home');
+        // CORREÇÃO AQUI: Navegar para 'Main' em vez de 'Home'
+        navigation.navigate('Main');
       } else {
         Alert.alert('Erro', 'E-mail ou senha incorretos');
       }
@@ -121,7 +122,8 @@ export default function LoginScreen({ navigation }) {
           [
             {
               text: 'OK',
-              onPress: () => navigation.navigate('Home')
+              // CORREÇÃO AQUI: Navegar para 'Main' em vez de 'Home'
+              onPress: () => navigation.navigate('Main')
             }
           ]
         );
@@ -131,7 +133,8 @@ export default function LoginScreen({ navigation }) {
   };
 
   const handleGuestLogin = () => {
-    navigation.navigate('Home');
+    // CORREÇÃO AQUI: Navegar para 'Main' em vez de 'Home'
+    navigation.navigate('Main');
   };
 
   const switchToCreateAccount = () => {

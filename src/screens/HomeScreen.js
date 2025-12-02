@@ -15,6 +15,14 @@ const { width } = Dimensions.get('window');
 export default function HomeScreen({ navigation }) {
   const menuItems = [
     {
+      title: 'DASHBOARD', // NOVO ITEM ADICIONADO
+      description: 'Estatísticas e análise da temporada 2025',
+      screen: 'Dashboard',
+      color: '#9C27B0',
+      icon: '📊',
+      gradient: ['#9C27B0', '#7B1FA2']
+    },
+    {
       title: 'PILOTOS 2025',
       description: 'Conheça todos os 20 corredores da temporada',
       screen: 'Drivers',
@@ -33,9 +41,9 @@ export default function HomeScreen({ navigation }) {
     {
       title: 'CIRCUITOS',
       description: 'Todos os 24 circuitos da temporada 2025',
-      screen: 'Circuits', // ← NOVO ITEM ADICIONADO
+      screen: 'Circuits',
       color: '#FFD700',
-      icon: '🏁',
+      icon: '📍',
       gradient: ['#FFD700', '#FFC400']
     },
     {
@@ -57,12 +65,12 @@ export default function HomeScreen({ navigation }) {
     'Retorno do GP da China'
   ];
 
-  // Atualizar stats para incluir circuitos
+  // Atualizar stats para incluir dashboard
   const stats = [
+    { number: '21', label: 'CORRIDAS' },
     { number: '20', label: 'PILOTOS' },
     { number: '10', label: 'EQUIPES' },
-    { number: '24', label: 'CIRCUITOS' }, // ← ATUALIZADO
-    { number: '24', label: 'CORRIDAS' }
+    { number: '24', label: 'CIRCUITOS' }
   ];
 
   return (
@@ -103,6 +111,8 @@ export default function HomeScreen({ navigation }) {
             Acompanhe todas as informações da nova temporada da Fórmula 1. 
             Pilotos, equipes, circuitos, resultados e muito mais em tempo real.
           </Text>
+          
+  
         </View>
 
         {/* Navigation Cards */}
@@ -152,6 +162,7 @@ export default function HomeScreen({ navigation }) {
           </View>
         </View>
 
+      
         {/* Footer */}
         <View style={styles.footer}>
           <Text style={styles.footerText}>© 2025 FÓRMULA 1 WORLD CHAMPIONSHIP</Text>
@@ -168,7 +179,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#0A0A0A',
   },
   scrollContent: {
-    paddingBottom: 40, // Aumentado para mais espaço
+    paddingBottom: 40,
   },
   heroSection: {
     backgroundColor: '#E10600',
@@ -276,6 +287,21 @@ const styles = StyleSheet.create({
     color: '#CCCCCC',
     lineHeight: 20,
     fontWeight: '400',
+    marginBottom: 15,
+  },
+  dashboardQuickButton: {
+    backgroundColor: '#9C27B0',
+    borderRadius: 10,
+    paddingVertical: 12,
+    paddingHorizontal: 16,
+    alignItems: 'center',
+    marginTop: 10,
+  },
+  dashboardQuickButtonText: {
+    color: '#FFFFFF',
+    fontSize: 14,
+    fontWeight: '700',
+    letterSpacing: 0.5,
   },
   menuSection: {
     paddingHorizontal: 20,
@@ -381,6 +407,44 @@ const styles = StyleSheet.create({
     color: '#CCCCCC',
     fontWeight: '500',
     flex: 1,
+  },
+  quickAccess: {
+    backgroundColor: '#111111',
+    marginHorizontal: 20,
+    padding: 22,
+    borderRadius: 16,
+    marginBottom: 25,
+    borderWidth: 1,
+    borderColor: '#222222',
+  },
+  quickAccessTitle: {
+    fontSize: 16,
+    fontWeight: '700',
+    color: '#E10600',
+    marginBottom: 15,
+    letterSpacing: 1,
+  },
+  quickButtons: {
+    flexDirection: 'row',
+    gap: 15,
+  },
+  quickButton: {
+    flex: 1,
+    paddingVertical: 15,
+    borderRadius: 12,
+    alignItems: 'center',
+  },
+  dashboardButton: {
+    backgroundColor: '#9C27B0',
+  },
+  driversButton: {
+    backgroundColor: '#E10600',
+  },
+  quickButtonText: {
+    fontSize: 14,
+    fontWeight: '700',
+    color: '#FFFFFF',
+    letterSpacing: 0.5,
   },
   footer: {
     alignItems: 'center',

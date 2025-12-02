@@ -1,4 +1,3 @@
-// src/screens/DashboardScreen.js
 
 import React, { useState } from 'react';
 import {
